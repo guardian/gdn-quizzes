@@ -19,4 +19,4 @@ You can then connect to your shell and create the first piece of config:
 
 Once this value has been created you can then create other configuration via the Data Viewer.
 
-&copy: The Guardian
+&copy; The Guardian

@@ -1,5 +1,5 @@
 application: gdn-quiz-experiments
-version: 1
+version: 6
 runtime: python27
 api_version: 1
 threadsafe: true
@@ -9,9 +9,18 @@ handlers:
   static_dir: static
 - url: /api/.*
   script: api.app
+- url: /tasks/.*
+  script: tasks.app
+- url: /reports/.*
+  script: reports.app
+- url: /reports
+  script: reports.app
 - url: /.*
   script: app.app
 
 libraries:
 - name: jinja2
   version: latest
+
+builtins:
+- deferred: on

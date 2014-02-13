@@ -5,8 +5,10 @@ import os
 import json
 import logging
 from urllib import quote, urlencode
+
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
+from google.appengine.api import memcache
 
 import headers
 
@@ -34,7 +36,7 @@ class ScoreHandler(webapp2.RequestHandler):
 		quiz = ndb.Key(Quiz, path).get()
 
 		if not quiz:
-			quiz = Quiz(id = path)
+			quiz = Quiz(id=path, path=path)
 			quiz.put()
 
 		QuizScore(parent=quiz.key, score=int(score)).put()
@@ -42,5 +44,30 @@ class ScoreHandler(webapp2.RequestHandler):
 		headers.json(self.response)
 		self.response.out.write(json.dumps({"score" : score}))
 
-app = webapp2.WSGIApplication([('/api/score', ScoreHandler)],
+class ResultsHandler(webapp2.RequestHandler):
+	def get(self):
+		headers.cors(self.response)
+		headers.json(self.response)
+
+		if not "path" in self.request.params:
+			abort(400, "No path supplied")
+
+		path = self.request.params.get("path")
+
+		data = memcache.get(path, namespace="results")
+
+		if data:
+			self.response.write(data)
+			return
+		
+		quiz = ndb.Key(Quiz, path).get()
+
+		quiz_average = ndb.Key('QuizAverage', quiz.path).get()
+
+		data = {'average_score' : quiz_average.average_score}
+		
+		self.response.out.write(json.dumps(data))
+
+app = webapp2.WSGIApplication([('/api/score', ScoreHandler),
+	('/api/results', ResultsHandler),],
                               debug=True)
