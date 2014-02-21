@@ -10,7 +10,7 @@ from google.appengine.ext import deferred
 from google.appengine.ext import ndb
 
 import headers
-from models import Quiz, QuizScore, QuizAverage, QuizResults, QuizResult
+from models import Quiz, QuizScore, QuizAverage, QuizResults, QuizResult, QuizNeedingRecalculation
 
 def generate_summary(quiz):
 	score_entries = [e for e in QuizScore.query(ancestor=quiz.key)]
@@ -48,8 +48,10 @@ def generate_summary(quiz):
 
 class GenerateQuizSummaries(webapp2.RequestHandler):
 	def get(self):
-		for quiz in Quiz.query():
-			deferred.defer(generate_summary, quiz)
+		for quiz in QuizNeedingRecalculation.query():
+			quiz_data = ndb.Key(Quiz, quiz.path).get()
+			if quiz_data:
+				deferred.defer(generate_summary, quiz_data)
 
 		headers.json(self.response)
 		self.response.out.write(json.dumps({"status" : "Summaries scheduled"}))
