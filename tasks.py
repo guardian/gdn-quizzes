@@ -52,6 +52,7 @@ class GenerateQuizSummaries(webapp2.RequestHandler):
 			quiz_data = ndb.Key(Quiz, quiz.path).get()
 			if quiz_data:
 				deferred.defer(generate_summary, quiz_data)
+				quiz.key.delete()
 
 		headers.json(self.response)
 		self.response.out.write(json.dumps({"status" : "Summaries scheduled"}))
