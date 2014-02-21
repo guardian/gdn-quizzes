@@ -12,7 +12,7 @@ from google.appengine.api import memcache
 
 import headers
 
-from models import Quiz, QuizScore
+from models import Quiz, QuizScore, QuizNeedingRecalculation
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
@@ -40,6 +40,11 @@ class ScoreHandler(webapp2.RequestHandler):
 			quiz.put()
 
 		QuizScore(parent=quiz.key, score=int(score)).put()
+
+		recalculation_flag = ndb.Key(QuizNeedingRecalculation, path).get()
+
+		if not recalculation_flag:
+			QuizNeedingRecalculation(id=path, path=path).put()
 
 		headers.json(self.response)
 		self.response.out.write(json.dumps({"score" : score}))

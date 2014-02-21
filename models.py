@@ -20,3 +20,6 @@ class QuizResult(ndb.Model):
 
 class QuizResults(ndb.Model):
 	results = ndb.StructuredProperty(QuizResult, repeated=True)
+
+class QuizNeedingRecalculation(ndb.Model):
+	path = ndb.StringProperty(required=True)
