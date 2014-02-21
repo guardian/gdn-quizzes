@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h1 class="article-heading">Guardian Quiz reports</h1>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<h2 class="sub-heading">Reporting</h2>
+			<form role="form" action="/reports/quiz">
+				<div class="form-group">
+					<label for="quiz-url">URL of the quiz</label>
+					<input type="text" name="quiz_url" id="quiz-url" class="form-control">
+				</div>
+				<button type="submit" class="btn btn-default">Get results</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

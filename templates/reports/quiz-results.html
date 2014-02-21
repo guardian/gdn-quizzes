@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<h1 class="article-heading">Guardian Quiz reports</h1>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<h2 class="sub-heading">Results</h2>
+			<p>Total scores recorded: {{total_scores}}</p>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Score</th>
+						<th>Number</th>
+						<th>Percentage</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{% for result in sorted_scores %}
+					<tr>
+						<td>{{result.score}}</td>
+						<td>{{result.number_of_scores}}</td>
+						<td>{{result.percentage}}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+{% endblock %}
