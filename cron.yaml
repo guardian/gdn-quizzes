@@ -1,4 +1,4 @@
 cron:
 - description: generate the average scores
   url: /tasks/summaries/generate
-  schedule: every 10 minutes
+  schedule: every 8 minutes

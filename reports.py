@@ -52,7 +52,17 @@ class ResultsHandler(webapp2.RequestHandler):
 
 		sorted_scores = sorted(results.results, key=attrgetter('score'))
 
-		template_values['sorted_scores'] = sorted_scores
+		max_percentage = max([s.percentage for s in sorted_scores])
+
+		def calculate_width(score_summary):
+			score_summary.width = (float(score_summary.percentage) / max_percentage) * 100
+			return score_summary
+
+		enhanced_scores = map(calculate_width, sorted_scores)
+
+		template_values['max_percentage'] = max_percentage
+
+		template_values['scores'] = enhanced_scores
 		template_values['total_scores'] = sum([result.number_of_scores for result in results.results])
 
 		self.response.out.write(template.render(template_values))

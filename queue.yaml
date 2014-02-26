@@ -1,0 +1,8 @@
+
+queue:
+  - name: quiz-results
+    rate: 4/s
+    max_concurrent_requests: 12
+    retry_parameters:
+      task_retry_limit: 4
+      min_backoff_seconds: 10

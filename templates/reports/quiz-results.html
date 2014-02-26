@@ -14,6 +14,7 @@
 		<div class="col-md-12">
 			<h2 class="sub-heading">Results</h2>
 			<p>Total scores recorded: {{total_scores}}</p>
+			<p>Max percentage: {{max_percentage}}</p>
 			<table class="table">
 				<thead>
 					<tr>
@@ -24,11 +25,11 @@
 				</thead>
 
 				<tbody>
-					{% for result in sorted_scores %}
+					{% for result in scores %}
 					<tr>
 						<td>{{result.score}}</td>
 						<td>{{result.number_of_scores}}</td>
-						<td>{{result.percentage}}</td>
+						<td><span class="quiz-result-bar" style="width: {{result.width}}%">{{result.percentage}}</span></td>
 					</tr>
 					{% endfor %}
 				</tbody>
