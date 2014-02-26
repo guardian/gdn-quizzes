@@ -47,12 +47,11 @@ def generate_summary(parent_quiz_key):
 		if not results:
 			results = QuizResults(id=quiz.path)
 
-		#scores = sorted([s.score for s in QuizScore.query(ancestor=quiz.key).fetch(batch_size=100)])
-
 		counter = Counter(scores)
 		#logging.info(counter)
 
-		summary_data = [(k, counter[k], int(float(counter[k]) / len(scores)) * 100) for k in sorted(counter.keys())]
+		summary_data = [(k, counter[k], int((float(counter[k]) / len(scores)) * 100)) for k in sorted(counter.keys())]
+		#logging.info(summary_data)
 
 		results.results = [QuizResult(score=s, number_of_scores=n, percentage=p) for (s,n,p) in summary_data]
 

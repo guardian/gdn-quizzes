@@ -55,7 +55,8 @@ class ResultsHandler(webapp2.RequestHandler):
 		max_percentage = max([s.percentage for s in sorted_scores])
 
 		def calculate_width(score_summary):
-			score_summary.width = (float(score_summary.percentage) / max_percentage) * 100
+			if max_percentage > 0:
+				score_summary.width = (float(score_summary.percentage) / max_percentage) * 100
 			return score_summary
 
 		enhanced_scores = map(calculate_width, sorted_scores)
