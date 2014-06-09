@@ -25,10 +25,11 @@ def generate_summary(parent_quiz_key):
 		score_data = key.get_async()
 		return score_data.get_result().score
 
-	scores = QuizScore.query(ancestor=parent_quiz_key).map(read_score, keys_only=True, batch_size=5000, deadline=100)
+	scores = QuizScore.query(ancestor=parent_quiz_key).map(read_score, keys_only=True, batch_size=5000, deadline=100, limit=100000)
 
-	score_total = sum(scores)
-	number_of_scores = len(scores)
+	for score in scores:
+		score_total = sum(scores)
+		number_of_scores = len(scores)
 
 	if scores:
 		average = score_total / number_of_scores
