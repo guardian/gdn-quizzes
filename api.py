@@ -4,7 +4,9 @@ import jinja2
 import os
 import json
 import logging
+
 from urllib import quote, urlencode
+from operator import attrgetter
 
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
@@ -69,7 +71,22 @@ class ResultsHandler(webapp2.RequestHandler):
 
 		quiz_average = ndb.Key('QuizAverage', quiz.path).get()
 
+		if not quiz_average:
+			abort(404, 'No results available')
+
 		data = {'average_score' : quiz_average.average_score}
+
+		results = ndb.Key('QuizResults', quiz.path).get()
+
+		if results:
+			sorted_scores = sorted(results.results, key=attrgetter('score'))
+
+			def score_summary(results):
+				return {'score': results.score,
+					'percentage' : results.percentage,}
+
+			data['scores'] = map(score_summary, sorted_scores)
+			data['max_percentage'] = max([s.percentage for s in sorted_scores])
 		
 		self.response.out.write(json.dumps(data))
 
