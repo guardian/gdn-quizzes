@@ -1,5 +1,5 @@
 application: gdn-quiz-experiments
-version: 23
+version: 24
 runtime: python27
 api_version: 1
 threadsafe: true
