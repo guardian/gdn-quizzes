@@ -11,10 +11,12 @@ from operator import attrgetter
 from google.appengine.api import urlfetch
 from google.appengine.ext import ndb
 from google.appengine.api import memcache
+from google.appengine.ext import deferred
 
 import headers
+import tasks
 
-from models import Quiz, QuizScore, QuizNeedingRecalculation
+from models import Quiz, QuizScore, QuizNeedingRecalculation, QuizSummary
 
 jinja_environment = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.join(os.path.dirname(__file__), "templates")))
@@ -47,6 +49,8 @@ class ScoreHandler(webapp2.RequestHandler):
 
 		if not recalculation_flag:
 			QuizNeedingRecalculation(id=path, path=path).put()
+
+		deferred.defer(tasks.update_summary, path, score, _queue='quiz-results')
 
 		headers.json(self.response)
 		self.response.out.write(json.dumps({"score" : score}))
@@ -88,6 +92,26 @@ class ResultsHandler(webapp2.RequestHandler):
 			data['scores'] = map(score_summary, sorted_scores)
 			data['max_percentage'] = max([s.percentage for s in sorted_scores])
 		
+		quiz_summary = ndb.Key(QuizSummary, path).get()
+		data['average_score'] = quiz_summary.current_average_score
+
+		percentages = [int((float(v) * int(k) / quiz_summary.total_score) * 100) for k, v in quiz_summary.score_distributions.items()]
+		quiz_summary.max_percentage = max(percentages)
+		data['max_percentage'] = quiz_summary.max_percentage
+
+		data['summary'] = quiz_summary.score_distributions
+
+		def calculate_width2(max_percentage, score_percentage):
+			if max_percentage > 0:
+				return (float(score_percentage) / max_percentage) * 100
+			return 0
+
+		sorted_keys = map(str, sorted(map(int, quiz_summary.score_distributions.keys())))
+		sorted_scores = [{"score" : key, "percentage" : int((float(quiz_summary.score_distributions[key]) / quiz_summary.total_scores_submitted) * 100)} for key in sorted_keys]
+
+
+		data['scores'] = sorted_scores
+
 		self.response.out.write(json.dumps(data))
 
 app = webapp2.WSGIApplication([('/api/score', ScoreHandler),

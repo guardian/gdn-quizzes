@@ -36,6 +36,40 @@
 			</table>
 		</div>
 	</div>
+
+	{% if summary %}
+	<div class="row">
+		<div class="col-md-12">
+			<h2 class="sub-heading">Results</h2>
+			<p>Total scores recorded: {{summary.total_scores_submitted}}</p>
+			<p>Total score: {{ summary.total_score }}</p>
+			<p>Max percentage: {{summary.max_percentage}}</p>
+			<p>Sorted key list: {{summary.sorted_keys}}</p>
+			<p>{{summary.sorted_data}}</p>
+			{{summary.score_distributions}}
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Score</th>
+						<th>Number</th>
+						<th>Percentage</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					{% for result in summary.sorted_data %}
+					<tr>
+						<td>{{result[0]}}</td>
+						<td>{{result[1]}}</td>
+						<td><span class="quiz-result-bar" style="width: {{result[3]}}%">{{result[2]}}</span></td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	{% endif %}
+
 </div>
 
 {% endblock %}

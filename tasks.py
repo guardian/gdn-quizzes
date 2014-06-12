@@ -15,7 +15,40 @@ from google.appengine.ext import ndb
 from google.appengine.api.taskqueue import TaskRetryOptions
 
 import headers
-from models import Quiz, QuizScore, QuizAverage, QuizResults, QuizResult, QuizNeedingRecalculation
+from models import Quiz, QuizScore, QuizAverage, QuizResults, QuizResult, QuizNeedingRecalculation, QuizSummary
+
+def update_summary(path, score):
+
+	logging.info("Summarising %s" % path)
+
+	key = ndb.Key('QuizSummary', path)
+
+	summary = key.get()
+
+	int_score = int(score)
+
+	if not summary:
+		summary = QuizSummary(key=key, total_score=int_score, total_scores_submitted=1)
+		summary.score_distributions = {score : 1}
+		summary.put()
+		return
+
+	summary.total_score += int_score
+	summary.total_scores_submitted += 1
+
+	distributions = summary.score_distributions
+
+	if not score in distributions:
+		distributions[score] = 0
+	
+	distributions[score] = distributions[score] + 1
+	logging.info(distributions)
+
+	summary.put()
+
+	return summary.key
+
+
 
 def generate_summary(parent_quiz_key):
 	quiz = parent_quiz_key.get()

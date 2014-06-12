@@ -6,3 +6,9 @@ queue:
     retry_parameters:
       task_retry_limit: 1
       min_backoff_seconds: 20
+  - name: quiz-summary-calculation
+    rate: 10/s
+    max_concurrent_requests: 40
+    retry_parameters:
+      task_retry_limit: 3
+      min_backoff_seconds: 7

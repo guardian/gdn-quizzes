@@ -23,3 +23,9 @@ class QuizResults(ndb.Model):
 
 class QuizNeedingRecalculation(ndb.Model):
 	path = ndb.StringProperty(required=True)
+
+class QuizSummary(ndb.Model):
+	total_score = ndb.IntegerProperty(required=True, default=0)
+	total_scores_submitted = ndb.IntegerProperty(required=True, default=0)
+	current_average_score = ndb.ComputedProperty(lambda self: self.total_score / self.total_scores_submitted)
+	score_distributions = ndb.JsonProperty()
